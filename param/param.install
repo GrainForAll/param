@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implement hook_install().
+ */
+function param_install() {
+}
+
+/**
+ * Implement hook_uninstall().
+ */
+function param_uninstall() {
+  drupal_uninstall_schema('param');
+}
+
+/**
+ * Implement hook_schema().
+ */
+function param_schema() {
+  $schema['param'] = array(
+    'description' => 'Custom key/value storage table.',
+    'fields' => array(
+      'name' => array(
+        'description' => 'Custom key.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'value' => array(
+        'description' => 'Custom value.',
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('name'), 
+  );
+
+  return $schema;
+}

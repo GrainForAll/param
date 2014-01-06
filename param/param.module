@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Set a param.
+ * @param custom key
+ * @param custom value
+ */
+function param_set($key, $value) {
+  db_merge('param')
+    ->key(array('name' => $key))
+    ->fields(array('value' => serialize($value)))
+    ->execute();
+  return;
+}
+
+/**
+ * Get a param.
+ * @param custom key
+ * @param default value if no result
+ * @return the custom value or default
+ */
+function param_get($key, $default = null) {
+  $value = db_select('param')
+    ->fields('param', array('value'))
+    ->condition('name', $key)
+    ->range(0, 1)
+    ->execute()
+    ->fetchField();
+
+  return ($value) ? unserialize($value) : $default;
+}

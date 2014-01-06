@@ -1,0 +1,5 @@
+name = Param
+description = "Custom key/value storage."
+package = Other
+version = 7.x-1.0
+core = 7.x
