@@ -6,20 +6,28 @@
  * @param custom value
  */
 function param_set($key, $value) {
-  db_merge('param')
-    ->key(array('name' => $key))
-    ->fields(array('value' => serialize($value)))
-    ->execute();
+  try {
+    db_merge('param')
+      ->key(array('name' => $key))
+      ->fields(array('value' => serialize($value)))
+      ->execute();
+  } catch (Exception $e) {
+    watchdog('param', "Exception thrown in param.module: " . $e->getMessage(), array(), WATCHDOG_CRITICAL);
+
+    if (user_access('administer param')) {
+      drupal_set_message($e->getMessage(), 'error');
+    }
+  }
+
   return;
 }
 
 /**
  * Get a param.
  * @param custom key
- * @param default value if no result
- * @return the custom value or default
+ * @return the custom value on success or FALSE on failure
  */
-function param_get($key, $default = null) {
+function param_get($key) {
   $value = db_select('param')
     ->fields('param', array('value'))
     ->condition('name', $key)
@@ -27,5 +35,17 @@ function param_get($key, $default = null) {
     ->execute()
     ->fetchField();
 
-  return ($value) ? unserialize($value) : $default;
+  return unserialize($value);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function param_permission() {
+  return array(
+    'administer param' =>  array(
+      'title' => t('Administer Param'),
+      'description' => t('Administer the Param module'),
+    ),
+  );
 }
